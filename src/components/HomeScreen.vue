@@ -1,28 +1,34 @@
 <template>
   <div id="app" class="container">
       <div class="left-section">
-        <h1>LEFT</h1>
+        <h1>We are a creative agency</h1>
+        <h1>Let’s join with us!</h1>
+        <p>Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain but because.</p>
       </div>
       <div class="right-section">
-        <h1>{{ msg }}</h1>
-        <form>
-          <FormInput class="form_input" label="Name" type="text" id="name"/>
-          <FormInput class="form_input" label="Email" type="email" id="email"/>
-        </form>
-        <div class="next-button">
-          <button>Next</button>
+        <div class="form-container">
+          <ProgressBar />
+          <form>
+            <FormInput class="form_input" label="Name" type="text" id="name"/>
+            <FormInput class="form_input" label="Email" type="email" id="email"/>
+          </form>
+          <div class="next-button">
+            <button>Next</button>
+          </div>
         </div>
       </div>
   </div>
 </template>
 
 <script>
+import ProgressBar from './ProgressBar.vue';
 import FormInput from './FormInput.vue';
 
 export default {
   name: 'HomeScreen',
   components: {
-    FormInput
+    FormInput,
+    ProgressBar
   },
   props: {
     msg: String
@@ -65,7 +71,38 @@ html, body {
 }
 
 .left-section {
-  background-color: #42b983;
+  background-image: url("https://img.freepik.com/fotos-gratis/closeup-de-executiva-brainstorming-grayscale_53876-42806.jpg?t=st=1731621273~exp=1731624873~hmac=34c1777c92b3e51f8efb4f534e683326f13a9bd6e3e95905861d7bccf57ed0bd&w=996");
+  background-size: cover;
+  background-position: center;
+  align-content: center;
+}
+
+.right-section {
+  background-color: #f9f9f9;
+  display: flex;
+  align-items: center;
+  padding: 40px;
+}
+
+h1, p {
+  color: white;
+  justify-self: center;
+  text-align: left;
+  width: 70%;
+}
+
+p {
+  margin-top: 5%;
+  line-height: 1.7em;
+}
+
+.form-container {
+  max-width: 400px;
+  width: 100%;
+}
+
+form {
+  margin-top: 13%;
 }
 
 button {
