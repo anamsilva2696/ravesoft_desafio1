@@ -8,15 +8,25 @@
       <div class="right-section">
         <div class="form-container">
           <ProgressBar />
-          <form>
-            <FormInput class="form_input" label="Name" type="text" id="name"/>
-            <FormInput class="form_input" label="Email" type="email" id="email"/>
+          <form @submit.prevent="nextStep">
+            <div v-if="currentStep === 1">
+              <FormInput class="form_input" label="Name" type="text" id="name"/>
+              <FormInput class="form_input" label="Email" type="email" id="email"/>
+            </div>
+            <div v-if="currentStep === 2">
+              <button class="previous-step-btn" @click="previousStep()"> ⟵ Previous Step</button>
+              <FormInput class="form_input" label="Phone Number" type="phone" id="phone"/>
+            </div>
+            <div v-if="currentStep === 3">
+              <button class="previous-step-btn" @click="previousStep()"> ⟵ Previous Step</button>
+              <FormInput class="form_input" label="Email" type="email" id="email"/>
+            </div>
+            <div class="next-button">
+              <button type="submit">{{ currentStep < totalSteps ? 'Next' : 'Submit' }}</button>
+            </div>
           </form>
-          <div class="next-button">
-            <button>Next</button>
-          </div>
         </div>
-      </div>
+      </div> 
   </div>
 </template>
 
@@ -32,6 +42,35 @@ export default {
   },
   props: {
     msg: String
+  },
+  data() {
+    return {
+      currentStep: 1,
+      totalSteps: 3,
+      formData: {
+        name: '',
+        email: '',
+        phone: '',
+        age: '',
+        address: '',
+        occupation: ''
+      }
+    }
+  },
+  methods: {
+    nextStep() {
+      if (this.currentStep < this.totalSteps) {
+        this.currentStep++;
+      } else {
+        alert("Form submitted!");
+      }
+    },
+
+    previousStep() {
+      if (this.currentStep > 0 && this.currentStep <= this.totalSteps) {
+        this.currentStep--;
+      } 
+    }
   }
 }
 </script>
@@ -109,6 +148,7 @@ button {
   border: 0;
   background: none;
   color: white;
+  cursor: pointer;
 }
 .next-button {
   width: 25%;
@@ -118,4 +158,15 @@ button {
   align-content: center;
   border-radius: 5px;
 }
+
+.previous-step-btn {
+  color: gray;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 10px;
+  font-size: small;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
 </style>

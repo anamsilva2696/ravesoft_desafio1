@@ -1,6 +1,6 @@
 <template>
     <div class="progress">
-        <span>1 OF 5 COMPLETED</span>
+        <span>1 OF 3 COMPLETED</span>
         <div class="progress-bar">
         <div class="progress-fill" style="width: 20%;"></div>
         </div>
