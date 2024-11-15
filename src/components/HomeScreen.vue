@@ -7,23 +7,40 @@
       </div>
       <div class="right-section">
         <div class="form-container">
-          <ProgressBar />
+          <ProgressBar :currentStep="currentStep" :totalSteps="totalSteps" />
           <form @submit.prevent="nextStep">
             <div v-if="currentStep === 1">
               <FormInput class="form_input" label="Name" type="text" id="name"/>
               <FormInput class="form_input" label="Email" type="email" id="email"/>
             </div>
             <div v-if="currentStep === 2">
-              <button class="previous-step-btn" @click="previousStep()"> ⟵ Previous Step</button>
+              <PreviousButton @previous-step="previousStep" />
               <FormInput class="form_input" label="Phone Number" type="phone" id="phone"/>
+              <div class="selecter-container">
+                <CustomSelecter
+                  label="Area of Interest"
+                  :options="areaOptions"
+                  v-model="selectedOption"
+                />
+              </div>
             </div>
             <div v-if="currentStep === 3">
-              <button class="previous-step-btn" @click="previousStep()"> ⟵ Previous Step</button>
-              <FormInput class="form_input" label="Email" type="email" id="email"/>
+              <PreviousButton @previous-step="previousStep" />
+              <div class="message-section">
+                <h2>Write a message</h2>
+                <textarea
+                  id="coverLetter"
+                  v-model="coverLetter"
+                  placeholder="Cover letter"
+                  class="message-input" > 
+                </textarea>
+                <label class="terms-checkbox">
+                  <input class="check-box" type="checkbox" v-model="agreed" />
+                  I agree to the <a href="#" target="_blank">Terms and Conditions</a>
+                </label>
+              </div>
             </div>
-            <div class="next-button">
-              <button type="submit">{{ currentStep < totalSteps ? 'Next' : 'Submit' }}</button>
-            </div>
+            <FormButton :title="currentStep < totalSteps ? 'Next' : 'Submit'" />
           </form>
         </div>
       </div> 
@@ -33,12 +50,18 @@
 <script>
 import ProgressBar from './ProgressBar.vue';
 import FormInput from './FormInput.vue';
+import FormButton from './FormButton.vue';
+import PreviousButton from './PreviousButton.vue';
+import CustomSelecter from './CustomSelecter.vue';
 
 export default {
   name: 'HomeScreen',
   components: {
     FormInput,
-    ProgressBar
+    ProgressBar,
+    FormButton,
+    PreviousButton,
+    CustomSelecter
   },
   props: {
     msg: String
@@ -54,7 +77,13 @@ export default {
         age: '',
         address: '',
         occupation: ''
-      }
+      },
+      selectedOption: '', // Holds the selected value
+      areaOptions: [
+        { value: 'Development' },
+        { value: 'Marketing' },
+        { value: 'Design' }
+      ]
     }
   },
   methods: {
@@ -69,7 +98,8 @@ export default {
     previousStep() {
       if (this.currentStep > 0 && this.currentStep <= this.totalSteps) {
         this.currentStep--;
-      } 
+      } else {
+      }
     }
   }
 }
@@ -144,29 +174,42 @@ form {
   margin-top: 13%;
 }
 
-button {
-  border: 0;
-  background: none;
-  color: white;
-  cursor: pointer;
-}
-.next-button {
-  width: 25%;
-  background-color: #42b983;
-  height: 50px;
-  margin-top: 3%;
-  align-content: center;
-  border-radius: 5px;
+.message-input {
+  width: 100%; /* Full width */
+  height: 150px; /* Height suitable for a message */
+  padding: 10px; /* Padding inside the text area */
+  border: 1px solid #ddd; /* Border color and style */
+  border-radius: 4px; /* Rounded corners */
+  font-size: 16px; /* Font size for readability */
+  resize: vertical; /* Allow vertical resizing only */
+  outline: none; /* Remove outline on focus */
+  transition: border-color 0.3s ease; /* Smooth border transition on focus */
+  margin-top: 20px;
 }
 
-.previous-step-btn {
-  color: gray;
-  width: 100%;
-  text-align: left;
-  margin-bottom: 10px;
-  font-size: small;
-  text-transform: uppercase;
-  cursor: pointer;
+/* Placeholder styling */
+.message-input::placeholder {
+  color: #aaa; /* Placeholder color */
 }
+
+/* Focus state for textarea */
+.message-input:focus {
+  border-color: #4caf50; /* Change border color on focus */
+}
+
+.check-box {
+  accent-color: green;
+}
+
+.terms-checkbox {
+  margin-top: 20px;
+}
+
+.message-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 
 </style>

@@ -1,15 +1,30 @@
 <template>
     <div class="progress">
-        <span>1 OF 3 COMPLETED</span>
+        <span>{{ currentStep }} OF {{ totalSteps }}</span>
         <div class="progress-bar">
-        <div class="progress-fill" style="width: 20%;"></div>
+        <div class="progress-fill" :style="{ width: percentage + '%' }"></div>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'ProgressBar'
+  name: 'ProgressBar',
+  props: {
+    currentStep: {
+      type: Number,
+      required: true
+    },
+    totalSteps: {
+      type: Number,
+      required: true
+    }
+  },
+  computed: {
+    percentage() {
+      return (this.currentStep / this.totalSteps) * 100;
+    }
+  }
 };
 </script>
 
