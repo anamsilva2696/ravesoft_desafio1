@@ -4,6 +4,7 @@
         :value="modelValue"
         :placeholder="label"
         class="message-input"
+        @input="$emit('update:modelValue', $event.target.value)"
     ></textarea>
 </template>
 
@@ -39,7 +40,7 @@
   
   /* Focus state for textarea */
   .message-input:focus {
-    border-color: #4caf50; /* Change border color on focus */
+    border-color: #01b681; /* Change border color on focus */
   }
   
 </style>

@@ -65,10 +65,12 @@
               <h2>Write a message</h2>
               <FormTextArea
                 id="coverLetter"
-                v-model="coverLetter"
+                v-model="message"
                 placeholder="Message"
                 class="message-input"
               />
+              <!-- Error message for message if exists -->
+              <span v-if="messageError" class="error-message">{{ messageError }}</span>
               <CheckBox v-model="agreed" />
               <!-- Error message for terms and conditions if exists -->
               <span v-if="termsError" class="error-message">{{ termsError }}</span>
@@ -109,10 +111,12 @@ export default {
       name: '', 
       email: '',
       phone: '',
+      message: '',
       nameError: '', 
       phoneError: '', 
       termsError: '', 
       emailError: '',
+      messageError: '',
       agreed: false,
       selectedOption: 'Other',
       areaOptions: [
@@ -133,7 +137,7 @@ export default {
         return !this.phoneError;
       }
       if (this.currentStep === 3) {
-        return !this.termsError
+        return !this.messageError && !this.termsError
       }
       return true;
     },
@@ -154,13 +158,14 @@ export default {
 
       if (this.currentStep == 3) {
         this.validateTermsAndConditions();
+        this.validateMessage();
       }
 
       if (this.isStepValid) {
         if (this.currentStep < this.totalSteps) {
           this.currentStep++;
         } else {
-          alert('Form submitted!');
+          this.$router.push("/success"); 
         }
       }
     },
@@ -204,6 +209,7 @@ export default {
 
     /* Validate terms and condition method */
     validateTermsAndConditions() {
+      console.log("agreed ", this.agreed);
       if(!this.agreed) {
         this.termsError = "Please read and agree to the terms and conditions to continue";
       } else {
@@ -227,6 +233,17 @@ export default {
     isValidPhone(phone) {
       const phoneRegex = /^[0-9]{9}$/; // 9-digit phone number
       return phoneRegex.test(phone);
+    },
+
+    /* Validate message method */
+    validateMessage() {
+      const trimmedValue = String(this.message || "").trim();
+
+      if (trimmedValue.length === 0) {
+        this.messageError = "Message is required.";
+      } else {
+        this.messageError = ""; // Clear the error if valid
+      }
     },
   },
 };

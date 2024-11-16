@@ -71,7 +71,7 @@ div {
 
 /* Change border color when focused */
 div.focused {
-  border-color: #4caf50; 
+  border-color: #01b681; 
 }
 
 </style>

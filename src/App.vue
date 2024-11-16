@@ -1,16 +1,13 @@
 <template>
-  <HomeScreen msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
 <script>
-import HomeScreen from './components/HomeScreen.vue';
-
 export default {
-  name: 'App',
-  components: {
-    HomeScreen
-  }
-}
+  name: "App",
+};
 </script>
 
 <style>

@@ -25,8 +25,8 @@ button {
   cursor: pointer;
 }
 .next-button {
-  width: 25%;
-  background-color: #42b983;
+  width: 100px;
+  background-color: #01b681;
   height: 50px;
   margin-top: 3%;
   align-content: center;

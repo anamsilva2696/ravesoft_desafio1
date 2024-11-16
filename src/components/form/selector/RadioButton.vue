@@ -1,6 +1,6 @@
 <template>
     <div>
-      <label>
+      <label class="radio-label">
         <input
           type="radio"
           :value="value"
@@ -8,7 +8,7 @@
           class="radio-button"
           @change="emitUpdate"
         />
-        {{ value }}
+        <span class="label-text">{{ value }}</span>
       </label>
     </div>
   </template>
@@ -36,24 +36,50 @@
   </script>
 
 <style scoped> 
-
 .radio-button {
-    width: 20px;
-    height: 20px;
-    accent-color: green;
-    vertical-align: middle;
+  appearance: none; /* Remove default styles */
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ccc; /* Gray border */
+  border-radius: 50%; /* Make it circular */
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  margin-right: 10px;
+  background-color: white; /* Ensure the background is white */
 }
 
-.radio-button label {
+/* Style for when the radio button is selected */
+.radio-button:checked {
+  border-color: #01b681; /* Make the border green */
+}
+
+/* Add the green dot inside the radio button */
+.radio-button:checked::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background-color: #01b681; /* Green dot in the center */
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Align the label text with the radio button */
+.radio-label {
   display: flex;
   align-items: center;
   font-size: 16px;
-  margin-left: 16px;
+  cursor: pointer;
 }
 
-.radio-button input[type="radio"] {
-  margin-right: 10px; /* Space between the radio button and the label */
+.label-text {
+  color: gray;
+  margin-left: 10px;
 }
 </style>
+
   
   
