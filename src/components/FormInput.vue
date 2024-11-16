@@ -1,29 +1,26 @@
 <template>
-    <div>
-        <input :type="type" :id="id" :placeholder="label" />
+    <div class="form-input">
+      <input
+        :type="type"
+        :id="id"
+        :placeholder="label"
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+      />
     </div>
-
-</template>
-<script>
-
-export default {
-  name: 'FormInput',
-  props: {
-    label: {
-        type: String,
-        required: true
+  </template>
+  
+  <script>
+  export default {
+    name: "FormInput",
+    props: {
+      label: { type: String, required: true }, // Label for the input
+      type: { type: String, default: "text" }, // Input type
+      id: { type: String, required: true }, // Unique ID
+      modelValue: { type: String, default: "" }, // v-model binding
     },
-    type: {
-        type: String,
-        default: 'text'
-    },
-    id: {
-        type: String,
-        required: true
-    }
-  }
-};
-</script>
+  };
+  </script>
 
 <style scoped>
 input {

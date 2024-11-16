@@ -1,49 +1,86 @@
 <template>
   <div id="app" class="container">
-      <div class="left-section">
-        <h1>We are a creative agency</h1>
-        <h1>Let’s join with us!</h1>
-        <p>Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain but because.</p>
+    <div class="left-section">
+      <h1>We are a creative agency</h1>
+      <h1>Let’s join with us!</h1>
+      <p>
+        Nor again is there anyone who loves or pursues or desires to obtain pain
+        of itself, because it is pain but because.
+      </p>
+    </div>
+    <div class="right-section">
+      <div class="form-container">
+        <ProgressBar :currentStep="currentStep" :totalSteps="totalSteps" />
+        <form @submit.prevent="nextStep">
+          <!-- Step 1 -->
+          <div v-if="currentStep === 1">
+            <!-- FormInput with v-model and @input -->
+            <FormInput
+              class="form_input"
+              label="Name"
+              type="text"
+              id="name"
+              v-model="writingName"
+              @input="validateName"
+            />
+
+            <span v-if="nameError" class="error-message">{{ nameError }}</span>
+  
+            <FormInput
+              class="form_input"
+              label="Email"
+              type="email"
+              id="email"
+              v-model="email"
+              @input="validateEmail"
+            />
+            <span v-if="emailError" class="error-message">{{emailError}}</span>
+          </div>
+
+          <!-- Step 2 -->
+          <div v-if="currentStep === 2">
+            <PreviousButton @previous-step="previousStep" />
+            <FormInput
+              class="form_input"
+              label="Phone Number"
+              type="text"
+              id="phone"
+              v-model="phone"
+            />
+            <span v-if="phoneError" class="error-message">{{ phoneError }}</span>
+
+            <div class="selecter-container">
+              <CustomSelecter
+                label="Area of Interest"
+                :options="areaOptions"
+                v-model="selectedOption"
+              />
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div v-if="currentStep === 3">
+            <PreviousButton @previous-step="previousStep" />
+            <div class="message-section">
+              <h2>Write a message</h2>
+              <textarea
+                id="coverLetter"
+                v-model="coverLetter"
+                placeholder="Message"
+                class="message-input"
+              ></textarea>
+              <label class="terms-checkbox">
+                <input class="check-box" type="checkbox" v-model="agreed" />
+                I agree to the <a href="#" target="_blank">Terms and Conditions</a>
+              </label>
+              <span v-if="termsError" class="error-message">{{ termsError }}</span>
+            </div>
+          </div>
+
+          <FormButton :title="currentStep < totalSteps ? 'Next' : 'Submit'" />
+        </form>
       </div>
-      <div class="right-section">
-        <div class="form-container">
-          <ProgressBar :currentStep="currentStep" :totalSteps="totalSteps" />
-          <form @submit.prevent="nextStep">
-            <div v-if="currentStep === 1">
-              <FormInput class="form_input" label="Name" type="text" id="name"/>
-              <FormInput class="form_input" label="Email" type="email" id="email"/>
-            </div>
-            <div v-if="currentStep === 2">
-              <PreviousButton @previous-step="previousStep" />
-              <FormInput class="form_input" label="Phone Number" type="phone" id="phone"/>
-              <div class="selecter-container">
-                <CustomSelecter
-                  label="Area of Interest"
-                  :options="areaOptions"
-                  v-model="selectedOption"
-                />
-              </div>
-            </div>
-            <div v-if="currentStep === 3">
-              <PreviousButton @previous-step="previousStep" />
-              <div class="message-section">
-                <h2>Write a message</h2>
-                <textarea
-                  id="coverLetter"
-                  v-model="coverLetter"
-                  placeholder="Cover letter"
-                  class="message-input" > 
-                </textarea>
-                <label class="terms-checkbox">
-                  <input class="check-box" type="checkbox" v-model="agreed" />
-                  I agree to the <a href="#" target="_blank">Terms and Conditions</a>
-                </label>
-              </div>
-            </div>
-            <FormButton :title="currentStep < totalSteps ? 'Next' : 'Submit'" />
-          </form>
-        </div>
-      </div> 
+    </div>
   </div>
 </template>
 
@@ -61,49 +98,122 @@ export default {
     ProgressBar,
     FormButton,
     PreviousButton,
-    CustomSelecter
-  },
-  props: {
-    msg: String
+    CustomSelecter,
   },
   data() {
     return {
       currentStep: 1,
       totalSteps: 3,
-      formData: {
-        name: '',
-        email: '',
-        phone: '',
-        age: '',
-        address: '',
-        occupation: ''
-      },
-      selectedOption: '', // Holds the selected value
+      writingName: '', // The name value bound to the input
+      nameError: "", 
+      phoneError: "", 
+      termsError: "", 
+      email: '',
+      phone: '',
+      emailError: '',
+      agreed: false,
+      selectedOption: '',
       areaOptions: [
         { value: 'Development' },
         { value: 'Marketing' },
-        { value: 'Design' }
-      ]
-    }
+        { value: 'Design' },
+      ],
+    };
+  },
+  computed: {
+    isStepValid() {
+      if (this.currentStep === 1) {
+        return !this.nameError && !this.emailError;
+      }
+      if (this.currentStep ===2) {
+        return !this.phoneError;
+      }
+      if (this.currentStep === 3) {
+        return !this.termsError
+      }
+      return true;
+    },
   },
   methods: {
+
     nextStep() {
-      if (this.currentStep < this.totalSteps) {
-        this.currentStep++;
-      } else {
-        alert("Form submitted!");
+      console.log("Name before validation:", this.name);
+
+      if (this.currentStep === 1) {
+        this.validateName();
+        this.validateEmail();
+      } 
+
+      if (this.currentStep == 2) {
+        this.validatePhone();
+      }
+
+      if (this.currentStep == 3) {
+        this.validateTermsAndConditions();
+      }
+
+      if (this.isStepValid) {
+        if (this.currentStep < this.totalSteps) {
+          this.currentStep++;
+        } else {
+          alert('Form submitted!');
+        }
+      }
+    },
+    previousStep() {
+      if (this.currentStep > 1) {
+        this.currentStep--;
       }
     },
 
-    previousStep() {
-      if (this.currentStep > 0 && this.currentStep <= this.totalSteps) {
-        this.currentStep--;
+    validateTermsAndConditions() {
+      if(!this.agreed) {
+        this.termsError = "Please read and agree to the terms and conditions to continue";
       } else {
+        this.termsError = "";
       }
-    }
-  }
-}
+    },
+    validateName() {
+      const trimmedValue = String(this.writingName || "").trim();
+      console.log("Validating name:", trimmedValue); // Debugging
+
+      if (trimmedValue.length === 0) {
+        this.nameError = "Name is required.";
+      } else {
+        this.nameError = ""; // Clear the error if valid
+      }
+    },
+    validatePhone() {
+      const trimmedPhone = this.phone.trim();
+      const phoneRegex = /^[0-9]{9}$/; // 9-digit phone number
+      if (!trimmedPhone) {
+        this.phoneError = "Phone number is required.";
+      } else if (!phoneRegex.test(trimmedPhone)) {
+        this.phoneError = "Please enter a valid 9-digit phone number.";
+      } else {
+        this.phoneError = "";
+      }
+    },
+    validateEmail() {
+      const trimmedValue = String(this.email || "").trim();
+      console.log("email:", trimmedValue.length === 0); // Debugging
+
+      if (trimmedValue.length === 0) {
+        this.emailError = 'Email is required.';
+      } else if (!this.isValidEmail(this.email)) {
+        this.emailError = 'Please enter a valid email address.';
+      } else {
+        this.emailError = '';
+      }
+    },
+    isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email || '');
+    },
+  },
+};
 </script>
+
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
@@ -209,6 +319,15 @@ form {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.error-message {
+  display: flex;
+  justify-self: flex-start;
+  font-size: 12px;
+  color: red;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 
