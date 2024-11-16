@@ -1,6 +1,6 @@
 <template>
     <div class="progress">
-        <span>{{ currentStep }} OF {{ totalSteps }}</span>
+        <span>{{ currentStep }} OF {{ totalSteps }} COMPLETED</span>
         <div class="progress-bar">
         <div class="progress-fill" :style="{ width: percentage + '%' }"></div>
         </div>
@@ -47,5 +47,6 @@ export default {
 .progress-fill {
   background-color: #4caf50;
   height: 100%;
+  transition: all .5s linear;
 }
 </style>

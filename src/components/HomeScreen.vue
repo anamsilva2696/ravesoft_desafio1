@@ -10,22 +10,21 @@
     </div>
     <div class="right-section">
       <div class="form-container">
+        <!-- Progress bar -->
         <ProgressBar :currentStep="currentStep" :totalSteps="totalSteps" />
         <form @submit.prevent="nextStep">
           <!-- Step 1 -->
           <div v-if="currentStep === 1">
-            <!-- FormInput with v-model and @input -->
             <FormInput
               class="form_input"
               label="Name"
               type="text"
               id="name"
-              v-model="writingName"
+              v-model="name"
               @input="validateName"
             />
-
+            <!-- Error message for name if exists -->
             <span v-if="nameError" class="error-message">{{ nameError }}</span>
-  
             <FormInput
               class="form_input"
               label="Email"
@@ -34,6 +33,7 @@
               v-model="email"
               @input="validateEmail"
             />
+            <!-- Error message for email if exists -->
             <span v-if="emailError" class="error-message">{{emailError}}</span>
           </div>
 
@@ -47,8 +47,8 @@
               id="phone"
               v-model="phone"
             />
+            <!-- Error message for phone if exists -->
             <span v-if="phoneError" class="error-message">{{ phoneError }}</span>
-
             <div class="selecter-container">
               <CustomSelecter
                 label="Area of Interest"
@@ -63,20 +63,18 @@
             <PreviousButton @previous-step="previousStep" />
             <div class="message-section">
               <h2>Write a message</h2>
-              <textarea
+              <FormTextArea
                 id="coverLetter"
                 v-model="coverLetter"
                 placeholder="Message"
                 class="message-input"
-              ></textarea>
-              <label class="terms-checkbox">
-                <input class="check-box" type="checkbox" v-model="agreed" />
-                I agree to the <a href="#" target="_blank">Terms and Conditions</a>
-              </label>
+              />
+              <CheckBox v-model="agreed" />
+              <!-- Error message for terms and conditions if exists -->
               <span v-if="termsError" class="error-message">{{ termsError }}</span>
             </div>
           </div>
-
+          <!-- show `Next` until the last step where it shows `Submit` -->
           <FormButton :title="currentStep < totalSteps ? 'Next' : 'Submit'" />
         </form>
       </div>
@@ -85,11 +83,13 @@
 </template>
 
 <script>
-import ProgressBar from './ProgressBar.vue';
-import FormInput from './FormInput.vue';
-import FormButton from './FormButton.vue';
-import PreviousButton from './PreviousButton.vue';
-import CustomSelecter from './CustomSelecter.vue';
+import ProgressBar from './form/ProgressBar.vue';
+import FormInput from './form/FormInput.vue';
+import FormButton from './form/buttons/FormButton.vue';
+import PreviousButton from './form/buttons/PreviousButton.vue';
+import CustomSelecter from './form/selector/CustomSelecter.vue';
+import FormTextArea from './form/FormTextArea.vue';
+import CheckBox from './form/CheckBox.vue';
 
 export default {
   name: 'HomeScreen',
@@ -99,28 +99,32 @@ export default {
     FormButton,
     PreviousButton,
     CustomSelecter,
+    FormTextArea,
+    CheckBox
   },
   data() {
     return {
       currentStep: 1,
       totalSteps: 3,
-      writingName: '', // The name value bound to the input
-      nameError: "", 
-      phoneError: "", 
-      termsError: "", 
+      name: '', 
       email: '',
       phone: '',
+      nameError: '', 
+      phoneError: '', 
+      termsError: '', 
       emailError: '',
       agreed: false,
-      selectedOption: '',
+      selectedOption: 'Other',
       areaOptions: [
         { value: 'Development' },
         { value: 'Marketing' },
         { value: 'Design' },
+        { value: 'Other' },
       ],
     };
   },
   computed: {
+    /* Check if the is valid to go to the next step */ 
     isStepValid() {
       if (this.currentStep === 1) {
         return !this.nameError && !this.emailError;
@@ -136,8 +140,8 @@ export default {
   },
   methods: {
 
+    /* method that is called when click on next button */ 
     nextStep() {
-      console.log("Name before validation:", this.name);
 
       if (this.currentStep === 1) {
         this.validateName();
@@ -160,22 +164,17 @@ export default {
         }
       }
     },
+
+    /* method that is called when click on previous button */ 
     previousStep() {
       if (this.currentStep > 1) {
         this.currentStep--;
       }
     },
 
-    validateTermsAndConditions() {
-      if(!this.agreed) {
-        this.termsError = "Please read and agree to the terms and conditions to continue";
-      } else {
-        this.termsError = "";
-      }
-    },
+    /* Validate name method */
     validateName() {
-      const trimmedValue = String(this.writingName || "").trim();
-      console.log("Validating name:", trimmedValue); // Debugging
+      const trimmedValue = String(this.name || "").trim();
 
       if (trimmedValue.length === 0) {
         this.nameError = "Name is required.";
@@ -183,20 +182,10 @@ export default {
         this.nameError = ""; // Clear the error if valid
       }
     },
-    validatePhone() {
-      const trimmedPhone = this.phone.trim();
-      const phoneRegex = /^[0-9]{9}$/; // 9-digit phone number
-      if (!trimmedPhone) {
-        this.phoneError = "Phone number is required.";
-      } else if (!phoneRegex.test(trimmedPhone)) {
-        this.phoneError = "Please enter a valid 9-digit phone number.";
-      } else {
-        this.phoneError = "";
-      }
-    },
+
+    /* Validate email method */
     validateEmail() {
       const trimmedValue = String(this.email || "").trim();
-      console.log("email:", trimmedValue.length === 0); // Debugging
 
       if (trimmedValue.length === 0) {
         this.emailError = 'Email is required.';
@@ -206,9 +195,38 @@ export default {
         this.emailError = '';
       }
     },
+
+    /* Validate email regex method */
     isValidEmail(email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email || '');
+    },
+
+    /* Validate terms and condition method */
+    validateTermsAndConditions() {
+      if(!this.agreed) {
+        this.termsError = "Please read and agree to the terms and conditions to continue";
+      } else {
+        this.termsError = "";
+      }
+    },
+    
+    /* Validate phone number method */
+    validatePhone() {
+      const trimmedPhone = this.phone.trim();
+      if (!trimmedPhone) {
+        this.phoneError = "Phone number is required.";
+      } else if (!this.isValidPhone(trimmedPhone.replace(/\s/g, ""))) {
+        this.phoneError = "Please enter a valid 9-digit phone number.";
+      } else {
+        this.phoneError = "";
+      }
+    },
+
+    /* Validate phone regex method */
+    isValidPhone(phone) {
+      const phoneRegex = /^[0-9]{9}$/; // 9-digit phone number
+      return phoneRegex.test(phone);
     },
   },
 };
@@ -217,6 +235,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+/* style for the full screen */
 
 *,
 *::before,
@@ -249,6 +269,7 @@ html, body {
   height: 100%;
 }
 
+/* style for the left section */
 .left-section {
   background-image: url("https://img.freepik.com/fotos-gratis/closeup-de-executiva-brainstorming-grayscale_53876-42806.jpg?t=st=1731621273~exp=1731624873~hmac=34c1777c92b3e51f8efb4f534e683326f13a9bd6e3e95905861d7bccf57ed0bd&w=996");
   background-size: cover;
@@ -256,6 +277,7 @@ html, body {
   align-content: center;
 }
 
+/* style for the right section */
 .right-section {
   background-color: #f9f9f9;
   display: flex;
@@ -263,6 +285,7 @@ html, body {
   padding: 40px;
 }
 
+/* style text */
 h1, p {
   color: white;
   justify-self: center;
@@ -275,6 +298,7 @@ p {
   line-height: 1.7em;
 }
 
+/* style for the form */
 .form-container {
   max-width: 400px;
   width: 100%;
@@ -284,43 +308,14 @@ form {
   margin-top: 13%;
 }
 
-.message-input {
-  width: 100%; /* Full width */
-  height: 150px; /* Height suitable for a message */
-  padding: 10px; /* Padding inside the text area */
-  border: 1px solid #ddd; /* Border color and style */
-  border-radius: 4px; /* Rounded corners */
-  font-size: 16px; /* Font size for readability */
-  resize: vertical; /* Allow vertical resizing only */
-  outline: none; /* Remove outline on focus */
-  transition: border-color 0.3s ease; /* Smooth border transition on focus */
-  margin-top: 20px;
-}
-
-/* Placeholder styling */
-.message-input::placeholder {
-  color: #aaa; /* Placeholder color */
-}
-
-/* Focus state for textarea */
-.message-input:focus {
-  border-color: #4caf50; /* Change border color on focus */
-}
-
-.check-box {
-  accent-color: green;
-}
-
-.terms-checkbox {
-  margin-top: 20px;
-}
-
+/*style for the message*/
 .message-section {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
+/*style for the error message*/
 .error-message {
   display: flex;
   justify-self: flex-start;
@@ -329,6 +324,5 @@ form {
   margin-top: 10px;
   margin-bottom: 10px;
 }
-
 
 </style>
