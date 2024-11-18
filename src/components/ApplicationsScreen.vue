@@ -29,6 +29,8 @@
   </template>
   
   <script>
+  import apiClient from '@/axios';
+
   export default {
     name: "ApplicationsScreen",
     data() {
@@ -47,12 +49,23 @@
           console.error("Failed to parse applications:", error);
         }
       }
+      this.fetchApplications();
     },
     methods: {
-      goBack() {
+    goBack() {
         this.$router.push('/home'); // Redirect to home on successful login
     },
-    },
+    async fetchApplications() {
+      try {
+          const userId = localStorage.getItem("user_id"); // Retrieve the user_id if stored
+          const response = await apiClient.post('/applications', { user_id: userId });
+
+          this.applications = response.data.applications;
+        } catch (error) {
+          console.error("Error fetching applications:", error);
+        }
+      }
+    }
   };
   </script>
   

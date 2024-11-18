@@ -12,7 +12,7 @@
       <div class="form-container">
         <!-- Progress bar -->
          <div class="button-container">
-          <button @click="fetchApplications" class="applications-button">See applications</button>
+          <button @click="goToApplications" class="applications-button">See applications</button>
           <button @click="logout" class="applications-button">Logout</button>
          </div>
         <ProgressBar :currentStep="currentStep" :totalSteps="totalSteps" />
@@ -299,27 +299,10 @@ export default {
         }    
     },
 
-    async fetchApplications() {
-      try {
-        const userId = localStorage.getItem("user_id"); // Retrieve the user_id if stored
-
-        console.log("Sending payload:", { user_id: userId }); // Debugging log
-
-
-        const response = await apiClient.post('/applications', { user_id: userId });
-
-        const applications = response.data.applications;
-
-        this.$router.push({
-          name: 'applications', // Your route name
-          query: {
-            applications: JSON.stringify(applications), // Serialize the object
-          },
+    goToApplications() {
+      this.$router.push({
+          name: 'applications'
         });
-
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-      }
     },
   },
 };
