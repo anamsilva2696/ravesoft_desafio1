@@ -1,7 +1,7 @@
 # Frontend Application - Vue.js
 
 This is the frontend application of the full-stack system, built using Vue.js. It allows users to log in, submit applications, and view their applications.
-This project inscludes the design asked for the frist challange and the consumation of the api to submit and see applications asked for the third challange.
+This project includes the design asked for the frist challange and the consumation of the api to submit and see applications asked for the third challange.
 
 ---
 
