@@ -11,6 +11,10 @@
     <div class="right-section">
       <div class="form-container">
         <!-- Progress bar -->
+         <div class="button-container">
+          <button @click="fetchApplications" class="applications-button">See applications</button>
+          <button @click="logout" class="applications-button">Logout</button>
+         </div>
         <ProgressBar :currentStep="currentStep" :totalSteps="totalSteps" />
         <form @submit.prevent="nextStep">
           <!-- Step 1 -->
@@ -92,6 +96,7 @@ import PreviousButton from './form/buttons/PreviousButton.vue';
 import CustomSelecter from './form/selector/CustomSelecter.vue';
 import FormTextArea from './form/FormTextArea.vue';
 import CheckBox from './form/CheckBox.vue';
+import apiClient from '@/axios';
 
 export default {
   name: 'HomeScreen',
@@ -165,11 +170,19 @@ export default {
         if (this.currentStep < this.totalSteps) {
           this.currentStep++;
         } else {
-          this.$router.push("/success"); 
+            this.saveApplication()
+          }
         }
-      }
+      },
+        resetForm() {
+        this.application = {
+          name: "",
+          email: "",
+          phone: "",
+          area: "",
+          message: "",
+        };
     },
-
     /* method that is called when click on previous button */ 
     previousStep() {
       if (this.currentStep > 1) {
@@ -245,6 +258,69 @@ export default {
         this.messageError = ""; // Clear the error if valid
       }
     },
+
+    async logout() {
+      try {
+        await apiClient.post('/logout');
+
+        // Remove token from localStorage
+        localStorage.removeItem('token');
+
+        this.$router.push('/'); // Redirect to home on successful login
+      } catch (error) {
+          console.error('Logout failed:', error.response.data.message);
+      }
+    },
+
+    async saveApplication() {
+      try {
+        const userId = localStorage.getItem("user_id"); // Retrieve the user_id if stored
+        const payload = {
+            name: this.name,
+            email: this.email,
+            phone: this.phone.replace(/\s/g, ""),
+            area: this.selectedOption,
+            message: this.message,
+            user_id: userId,
+        };
+        console.log("Submitting application:", payload);
+
+        // Send data to the backend API
+        const response = await apiClient.post('/saveapplication', payload);
+
+        // Handle success
+        console.log("Application submitted successfully:", response.data);
+        this.$router.push("/success"); 
+        this.resetForm();
+        } catch (error) {
+          // Handle errors
+          console.error("Error submitting application:", error.response || error);
+          alert("Failed to submit the application. Please try again.");
+        }    
+    },
+
+    async fetchApplications() {
+      try {
+        const userId = localStorage.getItem("user_id"); // Retrieve the user_id if stored
+
+        console.log("Sending payload:", { user_id: userId }); // Debugging log
+
+
+        const response = await apiClient.post('/applications', { user_id: userId });
+
+        const applications = response.data.applications;
+
+        this.$router.push({
+          name: 'applications', // Your route name
+          query: {
+            applications: JSON.stringify(applications), // Serialize the object
+          },
+        });
+
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      }
+    },
   },
 };
 </script>
@@ -300,6 +376,7 @@ html, body {
   display: flex;
   align-items: center;
   padding: 40px;
+  position: relative; /* Make this section the relative container */
 }
 
 /* style text */
@@ -342,4 +419,23 @@ form {
   margin-bottom: 10px;
 }
 
+.applications-button {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.applications-button:hover {
+  background-color: #333; /* Optional hover effect */
+}
+
+.button-container {
+  position: absolute; /* Position relative to the .right-section */
+  top: 20px; /* Adjust vertical distance from the top */
+  right: 30px; /* Adjust horizontal distance from the right */
+}
 </style>

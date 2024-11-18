@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     goToSuccess() {
-      this.$router.push("/"); 
+      this.$router.push("/home"); 
     },
   }
 };
